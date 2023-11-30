@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <Style>
+        body{
+            background-color: black;
+            color: white;
+            margin: 0;
+            padding: 10px;
+        }
+        .nav{
+            display: flex;
+            justify-content: space-between;
+        }
+        .nav>button{
+            background-color: transparent;
+            color: white;
+            border: none;
+            margin-right: 10%;
+            
+        }
+        .nav>button>img{
+            width: 40px;
+        }
+        hr{
+            border: solid 3px white;
+            border-radius: 25%;
+            width: 10%;
+            margin-left: 0.1%;
+            margin-top: -1%;
+        }
+        #tasks{
+            width: 90%;
+            display: flex;
+            gap: 20px;
+            flex-direction: row;
+            flex-wrap: wrap;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        .card{
+            width: 300px;
+            height: 300px;
+            border: solid 2px white;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: column;
+            padding: 5px;
+            padding-left: 15px;
+            border-radius: 5%;
+        }
+        .card>h3{
+            font-size: 2.5rem;
+            color: yellow;
+            font-weight: bold;
+            margin-top: -3%;
+
+        }
+        .card>p{
+            font-size: 1.4rem;
+            text-align: left;
+            word-wrap: break-word;
+            overflow: hidden;}
+
+        .card>h4{
+            font-size: 1.4rem;
+            border: solid 2px white;
+            width: 40%;
+            text-align: center;
+            background-color: white;
+            color: black;
+        }
+        .but{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .status{
+            width: 50%;
+            height: 90%;
+           background-color: yellow;
+           color: black;
+            font-size: 1.6rem;
+            text-align: center;
+            border-radius: 25px;
+        }
+        .icon>img{
+            width: 40px;
+        }
+
+    </Style>
+</head>
+<body>
+    <div class="nav"><h1>Task Manager</h1>
+    <button  onclick="window.location.href = './addform.html'"> <img src="./img/add.png" alt=""></button>
+    </div>
+    <hr>
+    
+    <div id="tasks">
+    
+    </div>
+    <script>
+        function update(i){
+            window.location.href = `./udateform.html?id=${i}`;
+        }
+        var container = document.querySelector('#tasks');
+        function fetchData() {
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', 'http://localhost:3000/', true);
+          xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                const data= JSON.parse(xhr.responseText);
+
+                for(let i=0;i<data.length;i++){
+                    const item=data[i];
+                    var card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `<h3>${item.title}</h3>
+            <p>${item.desc}</p>
+            <h4>${item.date}</h4>
+            <div class="but">
+                <div class="status">${item.status==='1'? 'completed':'Incompleted'}</div>
+                <div class="icon">
+                    <img src="./img/edit.png" alt="" onclick="update(${item.id})" >
+                    <img src="./img/delete.png" alt="" onclick="deleteitem(${item.id})">
+                </div>
+            </div>
+        `;
+       
+        container.appendChild(card);
+
+                }
+            } else {
+              console.error('Request failed. Status: ' + xhr.status);
+            }
+          };
+          xhr.onerror = function () {
+            console.error('Network error occurred');
+          };
+          xhr.send();
+        }
+        window.onload = fetchData;
+
+        function deleteitem(i){
+            console.log(i,"delete")
+            var apiEndpoint = `http://localhost:3000/deleteItem/${i}`; // Example URL
+            console.log(apiEndpoint);
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('DELETE', apiEndpoint, true);
+      xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          console.log('Delete successful. Response:', xhr.responseText);
+          location.reload();
+
+        } else {
+          console.error('Delete failed. Status: ' + xhr.status);
+        }
+      };
+      xhr.onerror = function () {
+        console.error('Network error occurred');
+      };
+
+      // Send the DELETE request
+      xhr.send();
+        }
+
+        
+      </script>
+</body>
+</html>

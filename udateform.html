@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            background-color: black;
+            color: white;
+            margin: 0;
+            padding: 10px;
+        }
+        h1{
+            font-size: 2rem;
+        }
+        .nav{
+            display: flex;
+            justify-content: space-between;
+        }
+        .nav>button{
+            background-color: transparent;
+            color: white;
+            border: none;
+            margin-right: 10%;
+            
+        }
+        .nav>button>img{
+            width: 40px;
+        }
+        hr{
+            border: solid 3px white;
+                border-radius: 25%;
+                width: 10%;
+                margin-left: 0.1%;
+                margin-top: -1%;        
+        }
+        input{
+            background-color: transparent;
+            border: solid 1px white;
+            height: 40px;
+            width: 300px;
+            border-radius: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            color: white;
+            padding: 5px;
+            font-size: 1.5rem;
+        }
+        label{
+            font-size: 1.3rem;
+            background-color: black;
+            margin-left: 15px;
+            margin-top: 10px;
+            
+            position:absolute;
+        }
+        textarea{
+            width: 300px;
+            height: 300px;
+            background-color: transparent;
+            border: solid 1px white;
+            padding: 20px;
+            font-size: 1.5rem;
+            margin-top: 20px;
+            color: white;
+        }
+        button{
+            width: 200px;
+            height: 40px;
+            font-size: 1.8rem;
+            text-align: center;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+        select{
+            width: 200px;
+            height: 40px;
+            background-color: transparent;
+            color: white;
+            font-size: 1.6rem;
+            text-align: center;
+            margin-top: 22px;
+        }
+        option{
+            background-color: black;
+            color: white;
+        }
+       
+    
+      </style>
+    </head>
+    <body>
+    
+        <div class="nav"><h1>Edit Task</h1>
+            <button  onclick="window.location.href = './index.html'"> <img src="./img/close.png" alt=""></button>
+            </div>
+            <hr>
+      <form id="postForm">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" required><br>
+    
+        <label for="desc">Description:</label>
+        <textarea id="desc" name="desc" required></textarea><br>
+    
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required><br>
+    
+        <label for="status">Status:</label>
+        <select id="status" name="status" required>
+          <option value=0>Incomplete</option>
+          <option value=1>Complete</option>
+        </select><br>
+    
+        <button type="button" onclick="updateData()">Post Data</button>
+      </form>
+    
+    <script>
+
+        function updateData(){
+            var title = document.getElementById('title').value;
+      var desc = document.getElementById('desc').value;
+      var date = document.getElementById('date').value;
+      var status = document.getElementById('status').value;
+
+      var pdata = {
+        title: title,
+        desc: desc,
+        date: date,
+        status: status
+      };
+      const pjdata= JSON.stringify(pdata);
+
+            const xhr= new XMLHttpRequest();
+            xhr.open('PUT',`http://localhost:3000/updateTask/${id}`, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload=()=>{
+                if(xhr.status>=200 && xhr.status<300){
+                    console.log('Post successful. Response:', xhr.responseText);
+                    window.location.href = "./index.html";
+                }
+                else{
+                    console.log("still error")
+                }
+            }
+            xhr.onerror=()=>{
+                console.log("error");
+            }
+            xhr.send(pjdata);
+        
+        }
+        function getQueryParam(variable) {
+      const query = window.location.search.substring(1);
+      const vars = query.split("&");
+      for (let i = 0; i < vars.length; i++) {
+        const pair = vars[i].split("=");
+        if (pair[0] === variable) {
+          return decodeURIComponent(pair[1]);
+        }
+      }
+      return null;
+    }
+    const id = getQueryParam('id');
+    document.write(id);
+    var xhr = new XMLHttpRequest();
+          xhr.open('GET', `http://localhost:3000/${id}`, true);
+          xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                console.log(xhr.responseText);
+                const data= JSON.parse(xhr.responseText);
+                document.getElementById('title').value=data.title;
+                document.getElementById('desc').value=data.desc;
+                document.getElementById('date').value=data.date;
+                document.getElementById('status').value=data.status;
+            } else {
+              console.error('Request failed. Status: ' + xhr.status);
+            }
+          };
+          xhr.onerror = function () {
+            console.error('Network error occurred');
+          };
+          xhr.send();
+        
+    </script>
+</body>
+</html>
